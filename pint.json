@@ -1,0 +1,9 @@
+{
+    "preset": "psr12",
+    "exclude": [
+        "database/migrations",
+        "public",
+        "storage",
+        "resources"
+    ]
+}

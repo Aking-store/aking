@@ -7,7 +7,6 @@ use App\Product;
 use GuzzleHttp\Client;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Date;
 
 class ParseG2GCoinsPrice extends Command
 {
@@ -44,7 +43,7 @@ class ParseG2GCoinsPrice extends Command
 
         $response = $client->request('GET', 'https://assets.g2g.com/offer/categories.json');
         $categories = json_decode($response->getBody()->getContents(), true);
-        $categories = array_filter($categories, fn($n) => count($n) == 4);
+        $categories = array_filter($categories, fn ($n) => count($n) == 4);
         $iteration = new Iteration();
         $iteration->save();
 
@@ -65,7 +64,7 @@ class ParseG2GCoinsPrice extends Command
 
                     foreach ($categoryInfo['payload']['results'] as $categoryProduct) {
 //                        dd($categoryProduct);
-                        $product = Product::where('offer_id',$categoryProduct['offer_id'])->where('site_name','g2g')->first();
+                        $product = Product::where('offer_id', $categoryProduct['offer_id'])->where('site_name', 'g2g')->first();
                         if ($product) {
                             $prices = $product->prices;
                             $prices[$iteration->id] = $categoryProduct['display_price'];
@@ -96,7 +95,6 @@ class ParseG2GCoinsPrice extends Command
 
 //                        dd($product);
                         $product->save();
-
                     }
 //                    die();
 //                    dd($products);

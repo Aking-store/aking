@@ -55,7 +55,9 @@ class Dumpinger extends Component
     /**
      * @return void
      */
-    public function mount() {}
+    public function mount()
+    {
+    }
 
     /**
      * @return void
@@ -69,7 +71,7 @@ class Dumpinger extends Component
     {
         $response = $this->client->request('GET', '/sell/manage?service=16', $this->headers);
 
-        $dom = new Dom;
+        $dom = new Dom();
         $dom->loadStr($response->getBody()->getContents());
 
         $this->games = [];
@@ -86,9 +88,7 @@ class Dumpinger extends Component
             parse_str(parse_url($game['link'], PHP_URL_QUERY), $parsed);
             $requestUrl = 'https://sls.g2g.com/offer/search?service_id=lgc_service_1&brand_id=lgc_game_' . $parsed['game'] . '&sort=recommended&page_size=100&currency=USD&country=UA';
             try {
-
                 for ($page = 1; $page <= 1000; $page++) {
-
                     $response = $this->client->request('GET', $requestUrl . '&page=' . $page);
                     $categoryInfo = json_decode($response->getBody()->getContents(), true);
 
@@ -107,7 +107,7 @@ class Dumpinger extends Component
             }
 
             $response = $this->client->request('GET', $game['link'], $this->headers);
-            $dom = new Dom;
+            $dom = new Dom();
             $dom->loadStr($response->getBody()->getContents());
 
             if (count($dom->find('div.manage__table'))) {
@@ -151,10 +151,11 @@ class Dumpinger extends Component
                         'current_lowest_price' => '',
                         'our_price' => '',
                         'our_new_price' => '',
-                        'checked' => rand(0,1),
+                        'checked' => rand(0, 1),
                     ];
                 }
-            } catch (\Exception $exception) {}
+            } catch (\Exception $exception) {
+            }
         }
     }
 
@@ -172,7 +173,7 @@ class Dumpinger extends Component
     private function regionsEnumeration(Dom $mainDom, array &$game, array $servers = []): void
     {
         $regions = [];
-        if ($mainDom->find('#region',0)) {
+        if ($mainDom->find('#region', 0)) {
             foreach ($mainDom->find('#region option') as $option) {
                 if (!empty($option->getAttribute('value'))) {
                     $regions[] = [
@@ -183,9 +184,9 @@ class Dumpinger extends Component
             }
             foreach ($regions as $region) {
                 $response = $this->client->request('GET', $game['link'] . '&region=' . $region['value'], $this->headers);
-                $dom = new Dom;
+                $dom = new Dom();
                 $dom->loadStr($response->getBody()->getContents());
-                $this->operateTable($dom,$game, $servers, $region['title']);
+                $this->operateTable($dom, $game, $servers, $region['title']);
             }
         }
     }
@@ -201,7 +202,7 @@ class Dumpinger extends Component
      */
     private function loadFromDB(array &$game): void
     {
-        if(isset($game['items']) and !empty($game['items'])) {
+        if (isset($game['items']) and !empty($game['items'])) {
             foreach ($game['items'] as &$item) {
                 $dumpGame = DumpGames::firstOrCreate(
                     ['outer_id' => $item['id']],
@@ -224,7 +225,7 @@ class Dumpinger extends Component
 
     public function updated($name, $value)
     {
-        $path = explode('.',$name);
+        $path = explode('.', $name);
         if ($path[0] == 'games') {
             $game = &$this->games[$path[1]];
             if ($path[2] == 'items') {
@@ -250,11 +251,9 @@ class Dumpinger extends Component
         if (!empty($this->games)) {
             if (!empty($this->games[$index]['items'])) {
                 foreach ($this->games[$index]['items'] as &$item) {
-                    $item['our_price'] = rand(1,100);
+                    $item['our_price'] = rand(1, 100);
                 }
             }
         }
     }
 }
-
-

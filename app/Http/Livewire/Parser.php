@@ -11,7 +11,6 @@ use Livewire\Component;
 use App\Product;
 use Illuminate\Database\Eloquent\Collection;
 use Shuchkin\SimpleXLSXGen;
-use Sunra\PhpSimple\HtmlDomParser;
 
 class Parser extends Component
 {
@@ -26,11 +25,12 @@ class Parser extends Component
 //        });
     }
 
-    public function csv($name) {
+    public function csv($name)
+    {
         $iteration = Iteration::max('id');
         $clearProductsArray = [];
         $titles = [];
-        Product::where('game_outer_name',$name)->where('iteration', '>', $iteration - 7)->chunk(200, function (Collection $products) use (&$clearProductsArray, &$titles) {
+        Product::where('game_outer_name', $name)->where('iteration', '>', $iteration - 7)->chunk(200, function (Collection $products) use (&$clearProductsArray, &$titles) {
             foreach ($products as $product) {
                 $productClear = $product->toArray();
                 unset(
@@ -60,17 +60,17 @@ class Parser extends Component
             $value = '';
         }
         foreach ($clearProductsArray as $clearProduct) {
-            $array[] = array_merge($titles,$clearProduct);
+            $array[] = array_merge($titles, $clearProduct);
         }
-        $xlsx = SimpleXLSXGen::fromArray( $array );
+        $xlsx = SimpleXLSXGen::fromArray($array);
 
         return response()->streamDownload(function () use ($xlsx) {
             echo (string)$xlsx;
         }, $name . ' - G2G - ' . date("Y-m-d H-i-s") .'.xls');
     }
 
-    public function parse() {
-
+    public function parse()
+    {
         $parsed = parse_url($this->url);
 //        dd($parsed);
 
@@ -81,14 +81,13 @@ class Parser extends Component
         ]);
 
         if ($parsed['host'] == "www.g2g.com") {
-
             $response = $client->request('GET', 'https://assets.g2g.com/offer/keyword.json');
 
             $games = json_decode($response->getBody()->getContents(), true);
 
             $response = $client->request('GET', 'https://assets.g2g.com/offer/categories.json');
             $categories = json_decode($response->getBody()->getContents(), true);
-            $categories = array_filter($categories, fn($n) => count($n) == 4);
+            $categories = array_filter($categories, fn ($n) => count($n) == 4);
 
             $name = '';
             foreach ($categories as $key => $category) {
@@ -135,7 +134,6 @@ class Parser extends Component
 
                 try {
                     for ($page = 1; $page <= 1000; $page++) {
-
                         $response = $client->request('GET', $requestUrl . '&page=' . $page);
 
                         $categoryInfo = json_decode($response->getBody()->getContents(), true);
@@ -160,13 +158,12 @@ class Parser extends Component
                                 'updated' => date("Y-m-d H:i:s", $categoryProduct['updated_at'] / 1000),
                                 ... $productAttributes
                             ];
-
                         }
                     }
                 } catch (\Exception $exception) {
                 }
 
-                $xlsx = SimpleXLSXGen::fromArray( $array );
+                $xlsx = SimpleXLSXGen::fromArray($array);
 
                 return response()->streamDownload(function () use ($xlsx) {
                     echo (string)$xlsx;
@@ -180,7 +177,7 @@ class Parser extends Component
             ]);
             $array = [];
             $html = $response->getBody()->getContents();
-            $dom = new Dom;
+            $dom = new Dom();
             $dom->loadStr($html);
 
             try {
@@ -234,7 +231,7 @@ class Parser extends Component
 //            }
 //            dd($array);
             $name = $dom->find('div h1')[0]->innerHtml;
-            $xlsx = SimpleXLSXGen::fromArray( $array );
+            $xlsx = SimpleXLSXGen::fromArray($array);
 
             return response()->streamDownload(function () use ($xlsx) {
                 echo (string)$xlsx;
@@ -247,12 +244,11 @@ class Parser extends Component
         return view('livewire.parser');
     }
 
-    private function funPayGetTextFromItem($element) {
+    private function funPayGetTextFromItem($element)
+    {
         return match ($element->getAttribute('class')) {
             'tc-user' => trim($element->find('div.media-user-name')[0]->innerHtml),
             default => trim($element->text(true)),
         };
     }
 }
-
-

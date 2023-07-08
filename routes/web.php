@@ -18,4 +18,3 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', Parser::class);
 Route::get('/parser', Parser::class);
 Route::get('/dumpinger', Dumpinger::class);
-
