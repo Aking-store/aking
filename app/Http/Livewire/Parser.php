@@ -19,10 +19,6 @@ class Parser extends Component
 
     public function mount()
     {
-//        $collection = Product::select('game_outer_name')->distinct('game_outer_name')->orderBy('game_outer_name')->get();
-//        $this->names = $collection->map(function ($item) {
-//            return (string)Str::of($item->game_outer_name)->trim();
-//        });
     }
 
     public function csv($name)
@@ -72,7 +68,6 @@ class Parser extends Component
     public function parse()
     {
         $parsed = parse_url($this->url);
-//        dd($parsed);
 
         $client = new Client([
             'timeout' => 15,
@@ -95,13 +90,21 @@ class Parser extends Component
                     continue;
                 }
                 $name = $key;
-
                 try {
                     $response = $client->request('GET', 'https://sls.g2g.com/offer/keyword_relation/collection?service_id=' . $category['service_id'] . '&brand_id=' . $category['brand_id']);
                     $dirtAttributes = json_decode($response->getBody()->getContents(), true);
                     $attributes = [];
+                    $subAttributes = [];
                     foreach ($dirtAttributes['payload']['results'] as $attribute) {
                         $attributes[$attribute['collection_id']] = $attribute['label']['en'];
+                        foreach ($attribute['children'] as $child) {
+                            if (count($child['children']) > 1) {
+                                foreach ($child['children'] as $subChild) {
+                                    $subAttributes[$subChild['dataset_id']] = $child['value'];
+                                }
+                                $subAttributes[$child['dataset_id']] = $child['value'];
+                            }
+                        }
                     }
                 } catch (\Exception $exception) {
                     $attributes = false;
@@ -111,8 +114,6 @@ class Parser extends Component
 
                 if (isset($parsed['query'])) {
                     parse_str($parsed['query'], $query);
-//                dd($query);
-
                     if (isset($query['region_id'])) {
                         $requestUrl = $requestUrl . '&region_id=' . $query['region_id'];
                     }
@@ -135,14 +136,18 @@ class Parser extends Component
                 try {
                     for ($page = 1; $page <= 1000; $page++) {
                         $response = $client->request('GET', $requestUrl . '&page=' . $page);
-
                         $categoryInfo = json_decode($response->getBody()->getContents(), true);
-
                         foreach ($categoryInfo['payload']['results'] as $categoryProduct) {
                             $productAttributes = [];
                             if ($attributes) {
                                 foreach ($categoryProduct['offer_attributes'] as $attribute) {
-                                    $productAttributes[$attributes[$attribute['collection_id']]] = $attribute['value'];
+                                    if (isset($subAttributes[$attribute['dataset_id']])) {
+                                        $productAttributes['s-'.$subAttributes[$attribute['dataset_id']]] = $subAttributes[$attribute['dataset_id']] . ' > ' .$attribute['value'];
+                                    } elseif (isset($attributes[$attribute['collection_id']])) {
+                                        $productAttributes['a-'.$attributes[$attribute['collection_id']]] = $attribute['value'];
+                                    } else {
+                                        $productAttributes['e-'.$attribute['collection_id']] = $attribute['value'];
+                                    }
                                 }
                             } else {
                                 foreach ($categoryProduct['offer_attributes'] as $attribute) {
@@ -191,45 +196,6 @@ class Parser extends Component
             } catch (ErrorException $exception) {
                 dd($element->innerHtml ?? 'Foreach problem', $exception->getMessage());
             }
-//            } else {
-//                $dom = new Dom;
-//                $dom->loadStr($html);
-//            $attributes = $dom->find('div.tc-header > div');
-//                $arrayHeader = [];
-//                foreach ($attributes as $attribute) {
-//                    $arrayHeader[] = trim($attribute->text(true));
-//                }
-//                $array[] = $arrayHeader;
-//                try {
-//                    foreach ($dom->find('a.tc-item') as $element) {
-//                        $additionAttributes = [];
-//                        foreach ($element->find('div.hidden-xs') as $key => $element2) {
-//                            $additionAttributes[trim($attributes[$key]->innerHtml)] = trim($element2->innerHtml);
-//                        }
-//
-//                        if (count($element->find('div.tc-desc-text'))) {
-//                            $array[] = [
-//                                'title' => trim($element->find('div.tc-desc-text')[0]->innerHtml),
-//                                'price' => trim($element->find('div.tc-price')[0]->text),
-//                                'seller_name' => trim($element->find('div.media-user-name')[0]->innerHtml),
-//                                ... $additionAttributes
-//                            ];
-//                        } else {
-//                            $array[] = [
-//                                'price' => $element->find('div.tc-price')[0]->text,
-//                                'seller_name' => $element->find('div.media-user-name')[0]->innerHtml,
-//                                ... $additionAttributes
-//                            ];
-//                        }
-//
-//
-//                    }
-//
-//                } catch (ErrorException $exception) {
-//                    dd($element->innerHtml ?? 'Foreach problem');
-//                }
-//            }
-//            dd($array);
             $name = $dom->find('div h1')[0]->innerHtml;
             $xlsx = SimpleXLSXGen::fromArray($array);
 

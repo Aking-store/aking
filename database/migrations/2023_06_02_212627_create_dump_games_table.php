@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('region')->nullable();
             $table->string('min_stock')->nullable();
             $table->string('max_stock')->nullable();
+            $table->float('min_price')->nullable();
             $table->string('dump')->nullable();
             $table->string('competitor_current_lowest_price')->nullable();
             $table->string('our_price')->nullable();

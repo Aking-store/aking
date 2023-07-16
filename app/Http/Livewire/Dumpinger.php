@@ -35,18 +35,17 @@ class Dumpinger extends Component
         ]);
 
         $this->headers = [
-
             'cookies' => CookieJar::fromArray([
-                '_dd_s' => 'rum=0&expire=1687627451105',
+                '_dd_s' => 'rum=0&expire=1689275067779',
                 'active_device_token' => '231c6871ec11c3c230a2fd0475a9d53a',
                 'g2g_regional' => '%7B%22country%22%3A%22BY%22%2C%22currency%22%3A%22USD%22%2C%22language%22%3A%22en%22%7D',
-                'G2GSESID_V4' => 'pjdsdk3cvi8vp28eotqra9oc93',
+                'G2GSESID_V4' => 'p5ikgridc1s830cjuo4rimi813',
                 'g_state' => '{"i_l":0}',
                 'googtransopt' => 'os=1',
-                'history_offers' => '%5B%2259292987%22%2C%2213928720%22%2C%2260528277%22%2C%2259530351%22%2C%2259338725%22%2C%2259583381%22%2C%2258130859%22%2C%2258122881%22%2C%2212789084%22%2C%2244228934%22%2C%2215846028%22%2C%2230358073%22%2C%2211268001%22%2C%2257714992%22%2C%2210945433%22%2C%2257587689%22%2C%2257106091%22%2C%2233527592%22%5D',
+                'history_offers' => '%5B%2242362088%22%2C%2235587088%22%2C%2257135554%22%2C%2235589358%22%2C%2257135681%22%2C%2245586800%22%2C%2259530413%22%2C%2259583381%22%2C%2259292987%22%2C%2259292986%22%2C%2259293073%22%2C%2259530351%22%2C%2259293054%22%2C%2259293081%22%2C%2259338755%22%2C%2259338792%22%2C%2262355808%22%2C%2261956237%22%5D',
                 'long_lived_token' => 'aae9a819b92af67bafa1cd82b673f9d7',
                 'noticebar_cookie' => '1',
-                'refresh_token' => '6955094.57257b8aa3075538f6abe8c8b2b37412',
+                'refresh_token' => '6955094.b7975add8eb7706bd83773210e3ccb6b',
                 'YII_CSRF_TOKEN' => '4f661e59f7cc165f2b9a3d7bdf44a62922ad619c',
             ], '.www.g2g.com'),
         ];
@@ -70,7 +69,6 @@ class Dumpinger extends Component
     public function start(): void
     {
         $response = $this->client->request('GET', '/sell/manage?service=16', $this->headers);
-
         $dom = new Dom();
         $dom->loadStr($response->getBody()->getContents());
 
@@ -118,8 +116,6 @@ class Dumpinger extends Component
 
             $this->loadFromDB($game);
         }
-
-//        dd($this->games);
     }
 
     /**
@@ -151,6 +147,7 @@ class Dumpinger extends Component
                         'current_lowest_price' => '',
                         'our_price' => '',
                         'our_new_price' => '',
+                        'min_price' => '',
                         'checked' => rand(0, 1),
                     ];
                 }
@@ -219,6 +216,7 @@ class Dumpinger extends Component
                 $item['dump'] = $dumpGame->dump;
                 $item['competitor_current_lowest_price'] = $dumpGame->current_price . '(' . $dumpGame->updated_at?->diffForHumans() . ' )';
                 $item['our_price'] = $dumpGame->new_price . '(' . $dumpGame->our_price_updated_at?->diffForHumans() . ' )';
+                $item['min_price'] = $dumpGame->min_price;
             }
         }
     }

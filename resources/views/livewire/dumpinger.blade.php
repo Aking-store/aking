@@ -29,6 +29,7 @@
                             <th scope="col">Server</th>
                             <th scope="col">Min stock</th>
                             <th scope="col">Max stock</th>
+                            <th scope="col">Min price</th>
                             <th scope="col">Competitor Current lowest price</th>
                             <th scope="col">Our price</th>
                             <th scope="col">dump %</th>
@@ -42,6 +43,7 @@
                                     <td wire:key="item-{{ $game['name'] }}-{{ $itemIndex }}-server"><a href="{{ $item['link'] ?? '#' }}" target="_blank">{{ $item['name'] ?? '' }}</a></td>
                                     <td wire:key="item-{{ $game['name'] }}-{{ $itemIndex }}-min_stock"><input wire:loading.attr="disabled" wire:model.debounce.500ms="games.{{ $gameIndex }}.items.{{ $itemIndex }}.min_stock" class="form-control" type="text"></td>
                                     <td wire:key="item-{{ $game['name'] }}-{{ $itemIndex }}-max_stock"><input wire:loading.attr="disabled" wire:model.debounce.500ms="games.{{ $gameIndex }}.items.{{ $itemIndex }}.max_stock" class="form-control" type="text"></td>
+                                    <td wire:key="item-{{ $game['name'] }}-{{ $itemIndex }}-min_price"><input wire:loading.attr="disabled" wire:model.debounce.500ms="games.{{ $gameIndex }}.items.{{ $itemIndex }}.min_price" class="form-control" type="text"></td>
                                     <td wire:key="item-{{ $game['name'] }}-{{ $itemIndex }}-competitor_current_lowest_price"><input wire:loading.attr="disabled" wire:model.debounce.500ms="games.{{ $gameIndex }}.items.{{ $itemIndex }}.competitor_current_lowest_price" class="form-control" type="text" disabled></td>
                                     <td wire:key="item-{{ $game['name'] }}-{{ $itemIndex }}-our_price"><input wire:loading.attr="disabled" wire:model.debounce.500ms="games.{{ $gameIndex }}.items.{{ $itemIndex }}.our_price" class="form-control" type="text" disabled></td>
                                     <td wire:key="item-{{ $game['name'] }}-{{ $itemIndex }}-dump"><input wire:loading.attr="disabled" wire:model.debounce.500ms="games.{{ $gameIndex }}.items.{{ $itemIndex }}.dump" class="form-control" type="text"></td>
