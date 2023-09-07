@@ -56,9 +56,32 @@
             </form>
         @endforeach
     @endif
+
+    <h2>White list</h2>
+    <form>
+        <div class="white-list row">
+        @if(count($whiteLists))
+            @foreach($whiteLists as $whiteListIndex => $whiteList)
+                <div class="col-3">
+                    <div class="input-group" wire:key="white-list-{{ $whiteListIndex }}">
+                        <input wire:loading.attr="disabled" wire:model.debounce.500ms="whiteLists.{{ $whiteListIndex }}.username" type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="button-whitelist-addon-{{ $whiteListIndex }}">
+                        <button class="btn btn-outline-secondary" wire:click="removeFromWhiteList({{ $whiteListIndex }})" type="button" id="button-whitelist-addon-{{ $whiteListIndex }}">Delete</button>
+                    </div>
+                </div>
+            @endforeach
+        @endif
+        <div class="col-12">
+            <button wire:click="addToWhiteList" type="button" class="btn btn-primary col-3">Add username</button>
+        </div>
+
+        </div>
+    </form>
 </div>
 <style>
     div.container.main {
         margin-top: 50px;
+    }
+    .white-list > div {
+        margin-bottom: 15px;
     }
 </style>

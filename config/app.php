@@ -197,6 +197,9 @@ return [
         App\Providers\TelescopeServiceProvider::class,
 
         Onecentlin\Adminer\ServiceProvider::class,
+
+        Janiaje\Benchmark\Provider::class,
+        browner12\helpers\HelperServiceProvider::class,
     ],
 
     /*

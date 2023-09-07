@@ -4,6 +4,8 @@
         "database/migrations",
         "public",
         "storage",
-        "resources"
+        "resources",
+        "docker",
+        "bootstrap"
     ]
 }

@@ -4,7 +4,7 @@ use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Http\Request;
 
 define('LARAVEL_START', microtime(true));
-
+ini_set('max_execution_time', 3600);
 /*
 |--------------------------------------------------------------------------
 | Check If The Application Is Under Maintenance
